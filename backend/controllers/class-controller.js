@@ -1,16 +1,17 @@
-const Sclass = require('../models/sclassSchema.js');
+const Sclass  = require('../models/sclassSchema.js');
 const Student = require('../models/studentSchema.js');
 const Subject = require('../models/subjectSchema.js');
 const Teacher = require('../models/teacherSchema.js');
 
 const sclassCreate = async (req, res) => {
+    //Nhận thông tin từ req.body (tên lớp và adminID) để tạo lớp học.
     try {
         const sclass = new Sclass({
             sclassName: req.body.sclassName,
             school: req.body.adminID
         });
 
-        const existingSclassByName = await Sclass.findOne({
+        const existingSclassByName = await Sclass.findOne({//Kiểm tra lớp đã tồn tại bằng Sclass.findOne.
             sclassName: req.body.sclassName,
             school: req.body.adminID
         });
@@ -18,10 +19,11 @@ const sclassCreate = async (req, res) => {
         if (existingSclassByName) {
             res.send({ message: 'Sorry this class name already exists' });
         }
-        else {
+        else {//Nếu không, lưu lớp (sclass.save()) và trả về kết quả.
             const result = await sclass.save();
             res.send(result);
         }
+
     } catch (err) {
         res.status(500).json(err);
     }
@@ -74,6 +76,7 @@ const getSclassStudents = async (req, res) => {
 const deleteSclass = async (req, res) => {
     try {
         const deletedClass = await Sclass.findByIdAndDelete(req.params.id);
+        //Sclass.findByIdAndDelete(req.params.id) để xóa lớp.
         if (!deletedClass) {
             return res.send({ message: "Class not found" });
         }
@@ -89,6 +92,7 @@ const deleteSclass = async (req, res) => {
 const deleteSclasses = async (req, res) => {
     try {
         const deletedClasses = await Sclass.deleteMany({ school: req.params.id });
+        //Dùng Sclass.deleteMany({ school: req.params.id }) để xóa tất cả lớp.
         if (deletedClasses.deletedCount === 0) {
             return res.send({ message: "No classes found to delete" });
         }
